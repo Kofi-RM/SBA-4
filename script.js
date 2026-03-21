@@ -11,6 +11,7 @@ let items = [{task:"Go to store", category:"Errand", date:"2026-03-21", status:"
    , {task:"Walk the cat", category:"Errand", date:"2026-03-23", status:"In Progress"} ,
    {task:"Go to bar", category:"Leisure", date:"2026-03-30", status:"In Progress"}
 ];
+localStorage.setItem("items", JSON.stringify(items))
 
 
 window.onclick = function(event) {
@@ -141,10 +142,13 @@ let showItems = () => {
     let filterItems;
     if (statusFilter.value == "Off" && categoryFilter.value == "Off") {
         filterItems = items;
-    } else if (categoryFilter.value != "Off") {
-     filterItems = items.filter((item) => item.category == categoryFilter.value )
-    } else if (statusFilter != "Off") {
-        filterItems = items.filter((item) => item.status == statusFilter.value )
+    } else if (categoryFilter.value == "Off") {
+     filterItems = items.filter((item) =>item.status == statusFilter.value )
+    } else if (statusFilter == "Off") {
+        filterItems = items.filter((item) => item.category == categoryFilter.value )
+    } else {
+        filterItems = items.filter((item) => item.status == statusFilter.value && item.category == categoryFilter.value)
+        console.log("here")
     }
     let count = 0;
     for (let item of filterItems) {
@@ -169,7 +173,7 @@ let showItems = () => {
 
 
 
-showItems();
+
 statusFilter.addEventListener("change", () => {
   
     showItems();
@@ -194,7 +198,7 @@ item.status = status;
 // Sets status to Overdue or In progress depending on date
 
     items.push(item);
-    console.log(item);
+    localStorage.setItem("items", JSON.stringify(items));
     categoryOptions.add(item.category);
 
 
@@ -210,3 +214,4 @@ item.status = status;
 })
 
 
+showItems(); // initialize items
