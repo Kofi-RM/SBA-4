@@ -1,6 +1,7 @@
 .flex-box {
     display:flex;
     flex-direction: row;
+    align-items: center;
 }
 
 .filter {
@@ -27,6 +28,29 @@
 }
 
 body {
-    width:100vw;
-    
+    width:90vw;
+    background-color: hsl(233, 65%, 41%);
+    color:aliceblue;
+
+}
+
+input, select {
+    background-color: hsla(233, 81%, 23%, 0.819);
+    color:aliceblue;
+    border-radius: 5%;
+    padding:4px;
+}
+
+input::placeholder {
+    color: aliceblue;
+}
+
+button {
+    background-color: bisque;
+    border-radius: 10%;
+    padding:4px;
+}
+
+img {
+    margin-left: 20px;;
 }
