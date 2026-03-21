@@ -7,11 +7,8 @@ let date = document.getElementById("date");
 let statusFilter = document.getElementById("statusSelect")
 let categoryFilter = document.getElementById("categorySelect")
 let categoryOptions = new Set();
-let items = [{task:"Go to store", category:"Errand", date:"2026-03-21", status:"In Progress"} 
-   , {task:"Walk the cat", category:"Errand", date:"2026-03-23", status:"In Progress"} ,
-   {task:"Go to bar", category:"Leisure", date:"2026-03-30", status:"In Progress"}
-];
-localStorage.setItem("items", JSON.stringify(items))
+let items = JSON.parse(localStorage.getItem("items"))
+
 
 
 window.onclick = function(event) {
@@ -31,17 +28,14 @@ let changeStatus = (e) => {
     let p = e.target.closest("div");
     let d = p.querySelector("div")
     let select = d.querySelector("select")
-    console.log(select)
-    console.log(d);
+
     select.addEventListener("change", () => {
     let id = Number(select.id);
-    console.log("id:", id);
-console.log("item at id:", items[id]);
-    console.log(items[id].status)
+
     
     console.log(select.value)
      items[id].status = select.value;
-    console.log(items);
+    
    
     showItems();
 
@@ -132,6 +126,8 @@ let updateCategory = (category) => {
 } // adds category to dropdown
 
 let showItems = () => {
+    let jsonItems = JSON.parse(localStorage.getItem("items"));
+    console.log(jsonItems)
       list.innerHTML ="";
     let categories = categoryFilter.children;
     let update = new Set();
@@ -141,14 +137,14 @@ let showItems = () => {
     
     let filterItems;
     if (statusFilter.value == "Off" && categoryFilter.value == "Off") {
-        filterItems = items;
+        filterItems = jsonItems;
     } else if (categoryFilter.value == "Off") {
-     filterItems = items.filter((item) =>item.status == statusFilter.value )
+     filterItems = jsonItems.filter((item) =>item.status == statusFilter.value )
     } else if (statusFilter == "Off") {
-        filterItems = items.filter((item) => item.category == categoryFilter.value )
+        filterItems = jsonItems.filter((item) => item.category == categoryFilter.value )
     } else {
-        filterItems = items.filter((item) => item.status == statusFilter.value && item.category == categoryFilter.value)
-        console.log("here")
+        filterItems = jsonItems.filter((item) => item.status == statusFilter.value && item.category == categoryFilter.value)
+        
     }
     let count = 0;
     for (let item of filterItems) {
@@ -184,7 +180,7 @@ categoryFilter.addEventListener("change", () => {
     showItems();
 })
 submitButton.addEventListener("click", () => {
-    let item = [];
+    let item = {};
     item.task = task.value;
     item.category = category.value;
     item.date = date.value;
@@ -198,9 +194,14 @@ item.status = status;
 // Sets status to Overdue or In progress depending on date
 
     items.push(item);
+    console.log(items);
+    console.log(JSON.stringify(items));
     localStorage.setItem("items", JSON.stringify(items));
-    categoryOptions.add(item.category);
+let storedItems = JSON.parse(localStorage.getItem("items"));
+console.log("Stored items:", storedItems);
 
+    categoryOptions.add(item.category);
+    localStorage.setItem("category", categoryOptions);
 
     task.value= "";
     category.value = "";
