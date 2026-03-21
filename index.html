@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="./script.js" defer></script>
+    <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+    <h1>Task Management App</h1>
+    <div class="flex-box">
+        <div class="filter">
+   <h3>Filter By Category</h3>
+   <select id = "categorySelect">
+    <option>Off</option>
+   </select>
+   </div>
+   <div class="filter">
+     <h3>Filter By Status</h3>
+   <select id = "statusSelect">
+<option>Off</option>
+    <option>In Progress</option>
+    <option>Completed</option>
+    <option>Overdue</option>
+   </select>
+   </div>
+</div>
+   <br>
+    <input id = "task" type="text" placeholder="Enter your task">
+     <input id= "category" type="text" placeholder="Enter the category">
+     <input id = "date" type="date">
+     <button type="submit" id ="submit">Submit</button>
+
+    <ul id = "list">
+    
+    </ul>
+</body>
+</html>
