@@ -14,18 +14,19 @@ let changeStatus = (e) => {
     let p = e.target.closest("div");
     let d = p.querySelector("div")
     let select = d.querySelector("select")
+    // get associated select
 
     select.addEventListener("change", () => {
     let id = Number(select.id);
+        if (!compareDate(items[id])) {
+    items[id].changed = true;
+    console.log("true")
+        }
 
-    let i = localStorage.getItem("items");
-    let itemsParse = JSON.parse(i);
-    // get local storage
-
-    console.log(itemsParse[id])
-     itemsParse[id].status = select.value;
-     // change valuei in local storage
-    localStorage.setItem("items", JSON.stringify(itemsParse))
+ items[id].status = select.value;
+localStorage.setItem("items", JSON.stringify(items));
+     // change value in local storage
+ 
    
     showItems();
     // update
@@ -45,7 +46,11 @@ let showItems = () => {
     console.log(jsonItems)
       list.innerHTML ="";
     let categories = categoryFilter.children;
-    
+    let count = 0;
+    for (let item of jsonItems) {
+item.id = count;
+        count++;
+    }
     let filterItems;
     if (statusFilter.value == "Off" && categoryFilter.value == "Off") {
         filterItems = jsonItems;
@@ -58,11 +63,18 @@ let showItems = () => {
         
     }
 
-    let count = 0;
     if (filterItems) {
     for (let item of filterItems) {
-      createItems(item, count);
-      count++;
+    
+        if (item.changed == false && item.status != "Completed") {
+
+item.status = compareDate(item) ? "In Progress" : "Overdue";
+   count++;
+}
+    localStorage.setItem("items", JSON.stringify(items));
+
+      createItems(item, item.id);
+
       if (item.category != "") {
       categoryOptions.add(item.category);
       }
@@ -72,9 +84,10 @@ let showItems = () => {
 
     for (let i = 0; i < categories.length; i++) {
         currentCategories.add(categories[i].value);
-    }
+    } // turns current categories into a set to compare later
 
     let addCategories = categoryOptions.difference(currentCategories);
+    // finds category that needs to be added
 
     for (let category of addCategories) {
     updateCategory(category);
@@ -96,6 +109,10 @@ let createItems = (item, count) => {
     <option>Completed</option>
     <option>Overdue</option>
    </select>`
+        let button = document.createElement("button");
+        button.innerHTML = ` <svg width="16" height="16" viewBox="0 0 24 24">
+    <path d="M6 6L18 18M18 6L6 18" stroke="red" stroke-width="2"/>
+  </svg>`
 
         let select =  dropdown.querySelector("select");
         select.classList.add("hide");
@@ -121,7 +138,7 @@ let createItems = (item, count) => {
 
     let statusContainer = document.createElement("div");
     statusContainer.classList.add("flex-box")
-        
+        // add classes
      
         taskText.textContent = "Task: " +item.task;
         categoryText.textContent = "Category: " + item.category;
@@ -136,7 +153,11 @@ select.addEventListener("change", (e) => {
     select.classList.remove("show");
 }); // remove dropdown after selecting
 
-
+button.addEventListener("click", () => {
+    items.splice(item.id, 1);
+localStorage.setItem("items", JSON.stringify(items));
+ showItems();
+})
 
         taskContainer.appendChild(taskText);
          taskContainer.appendChild(categoryText);
@@ -149,12 +170,22 @@ select.addEventListener("change", (e) => {
           flexbox.appendChild(statusContainer);
 
           listItem.appendChild(flexbox);
+          listItem.appendChild(button)
 
           list.appendChild(listItem);
           // connecting elements to each other
 }
 
+let compareDate = (item) => {
+    let [year, month, day] = item.date.split("-").map(Number);
 
+let itemDate = new Date(year, month - 1, day); // local date, no timezone issues
+
+let now = new Date();
+let todayDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+return itemDate >= todayDate
+} // helper function for comparing item date to current date
 
 
 
@@ -171,20 +202,14 @@ submitButton.addEventListener("click", () => {
     item.task = task.value;
     item.category = category.value;
     item.date = date.value;
-
-    const today = new Date();
-const formattedToday = today.toISOString().split("T")[0];
-
-
-let status = item.date >= formattedToday ? "In Progress" : "Overdue";
-item.status = status;
+    item.changed = false;
+ 
+item.status = compareDate(item) ? "In Progress" : "Overdue";
 // Sets status to Overdue or In progress depending on date
 
-    console.log(items);
-    console.log(item)
+  
     items.push(item);
-    console.log(items);
-    console.log(JSON.stringify(items));
+    
     localStorage.setItem("items", JSON.stringify(items));
 let storedItems = JSON.parse(localStorage.getItem("items"));
 console.log("Stored items:", storedItems);
@@ -202,6 +227,5 @@ console.log("Stored items:", storedItems);
     showItems();
     
 })
-
 
 showItems(); // initialize items
